@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"tm-store.users"}],"uuid":"9f3ffba40ebb447c97f774bb201dc9f2"}
