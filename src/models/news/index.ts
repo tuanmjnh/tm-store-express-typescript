@@ -1,7 +1,28 @@
-const mongoose = require('mongoose')
-const schema = new mongoose.Schema({
+import { Document, Schema, model } from 'mongoose';
+export interface INews extends Document {
+  categories: Schema.Types.ObjectId;
+  title: string;
+  code: string;
+  desc: string;
+  content: string;
+  url: string;
+  images: string;
+  author: string;
+  date: Date;
+  pin: string[];
+  tags: string[];
+  attr: any[];
+  meta: any[];
+  attach: any[];
+  start_at: Date;
+  end_at: Date;
+  orders: number;
+  flag: number;
+  created: any;
+}
+const schema: Schema = new Schema({
   // type: { type: String, default: null },
-  categories: { type: mongoose.Schema.Types.ObjectId, ref: 'categories' },
+  categories: { type: Schema.Types.ObjectId, ref: 'categories' },
   title: { type: String, required: true },
   code: { type: String, default: null, uppercase: true },
   desc: { type: String, default: null },
@@ -19,7 +40,7 @@ const schema = new mongoose.Schema({
   end_at: { type: Date, default: null },
   orders: { type: Number, default: 1 },
   flag: { type: Number, default: 1 },
-  created: { type: Object, default: { at: new Date(), by: '', ip: '' } }
-})
-module.exports = mongoose.model('news', schema)
-schema.index({ code: 'text', title: 'text', author: 'text' })
+  created: { type: Object, default: { at: new Date(), by: '', ip: '' } },
+});
+export default model<INews>('news', schema);
+schema.index({ code: 'text', title: 'text', author: 'text' });

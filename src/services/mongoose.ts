@@ -1,11 +1,15 @@
-const mongoose = require('mongoose')
+import { connect } from 'mongoose';
 // mongoose initialize
-module.exports.initialize = function() {
-  mongoose.connect(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopology: true }).then(
-    () => { console.log('Database connection is successful') },
-    err => { console.log(`Error when connecting to the database ${err}`) }
-  )
-}
+export const initialize = () => {
+  connect(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopology: true }).then(
+    () => {
+      console.log('Database connection is successful');
+    },
+    err => {
+      console.log(`Error when connecting to the database ${err}`);
+    },
+  );
+};
 
 // const MongoClient = require('mongodb').MongoClient;
 // const client = new MongoClient(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopology: true })

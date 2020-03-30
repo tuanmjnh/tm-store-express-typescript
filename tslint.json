@@ -5,7 +5,8 @@
   "rules": {
     "quotemark": false,
     "no-console": false,
-    "object-literal-sort-keys": false
+    "object-literal-sort-keys": false,
+    "radix": false
   },
   "rulesDirectory": []
 }

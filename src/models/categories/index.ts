@@ -1,7 +1,29 @@
-const mongoose = require('mongoose');
-const schema = new mongoose.Schema({
+import { Document, Schema, model } from 'mongoose';
+export interface ICategory extends Document {
+  type: string;
+  dependent: Schema.Types.ObjectId;
+  level: number;
+  title: string;
+  code: string;
+  desc: string;
+  content: string;
+  url: string;
+  images: string;
+  quantity: number;
+  position: any[];
+  tags: any[];
+  icon: string;
+  color: string;
+  meta: any[];
+  start_at: Date;
+  end_at: Date;
+  orders: number;
+  flag: number;
+  created: any;
+}
+const schema: Schema = new Schema({
   type: { type: String, required: true },
-  dependent: { type: mongoose.Schema.Types.ObjectId, default: null },
+  dependent: { type: Schema.Types.ObjectId, default: null },
   level: { type: Number, default: 1 },
   title: { type: String, required: true },
   code: { type: String, required: true, uppercase: true },
@@ -19,6 +41,6 @@ const schema = new mongoose.Schema({
   end_at: { type: Date, default: null },
   orders: { type: Number, default: 1 },
   flag: { type: Number, default: 1 },
-  created: { type: Object, default: { at: new Date(), by: '', ip: '' } }
+  created: { type: Object, default: { at: new Date(), by: '', ip: '' } },
 });
-module.exports = mongoose.model('categories', schema);
+export default model<ICategory>('categories', schema);
