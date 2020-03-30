@@ -1,4 +1,5 @@
 import { Document, Schema, model } from 'mongoose';
+import ICreated from '../created';
 export interface INews extends Document {
   categories: Schema.Types.ObjectId;
   title: string;
@@ -18,7 +19,7 @@ export interface INews extends Document {
   end_at: Date;
   orders: number;
   flag: number;
-  created: any;
+  created: ICreated;
 }
 const schema: Schema = new Schema({
   // type: { type: String, default: null },

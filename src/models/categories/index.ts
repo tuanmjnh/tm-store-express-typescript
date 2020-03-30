@@ -1,4 +1,5 @@
 import { Document, Schema, model } from 'mongoose';
+import ICreated from '../created';
 export interface ICategory extends Document {
   type: string;
   dependent: Schema.Types.ObjectId;
@@ -19,7 +20,7 @@ export interface ICategory extends Document {
   end_at: Date;
   orders: number;
   flag: number;
-  created: any;
+  created: ICreated;
 }
 const schema: Schema = new Schema({
   type: { type: String, required: true },

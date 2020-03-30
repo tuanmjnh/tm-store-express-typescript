@@ -1,6 +1,5 @@
-export interface ICreated {
-  email: string;
-  password: string;
-  remember: boolean;
-  token: string;
+export default interface ICreated {
+  at: string;
+  by: any;
+  ip: string;
 }

@@ -1,5 +1,16 @@
-const mongoose = require('mongoose');
-const schema = new mongoose.Schema({
+import { Document, Schema, model } from 'mongoose';
+import ICreated from '../created';
+export interface IType extends Document {
+  key: string;
+  code: string;
+  name: string;
+  desc: string;
+  meta: any[];
+  orders: number;
+  flag: number;
+  created: ICreated;
+}
+const schema = new Schema({
   key: { type: String, required: true },
   code: { type: String, required: true },
   name: { type: String, required: true },
@@ -7,6 +18,6 @@ const schema = new mongoose.Schema({
   meta: { type: Array, default: null },
   orders: { type: Number, default: 1 },
   flag: { type: Number, default: 1 },
-  created: { type: Object, default: { at: new Date(), by: '', ip: '' } }
+  created: { type: Object, default: { at: new Date(), by: '', ip: '' } },
 });
-module.exports = mongoose.model('types', schema);
+export default model<IType>('types', schema);

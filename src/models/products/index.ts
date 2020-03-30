@@ -1,4 +1,5 @@
 import { Document, Schema, model } from 'mongoose';
+import ICreated from '../created';
 export interface IProduct extends Document {
   categories: Schema.Types.ObjectId;
   title: string;
@@ -23,11 +24,11 @@ export interface IProduct extends Document {
   // end_at: { type: Date, default: null },
   order: number;
   flag: number;
-  created: any;
+  created: ICreated;
 }
-const schema = new mongoose.Schema({
+const schema = new Schema({
   // type: { type: String, default: null },
-  categories: { type: mongoose.Schema.Types.ObjectId, ref: 'categories', required: true },
+  categories: { type: Schema.Types.ObjectId, ref: 'categories', required: true },
   title: { type: String, required: true },
   code: { type: String, required: true, uppercase: true },
   desc: { type: String, default: null },

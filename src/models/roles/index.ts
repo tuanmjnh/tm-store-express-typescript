@@ -1,4 +1,5 @@
 import { Document, Schema, model } from 'mongoose';
+import ICreated from '../created';
 export interface IRole extends Document {
   key: string;
   name: string;
@@ -7,7 +8,7 @@ export interface IRole extends Document {
   color: string;
   routes: string[];
   flag: number;
-  created: any;
+  created: ICreated;
   // type: 'personal',
   // order: 1,
 }
@@ -23,4 +24,4 @@ const schema = new Schema({
   // type: 'personal',
   // order: 1,
 });
-module.exports = mongoose.model('roles', schema);
+export default model<IRole>('products', schema);
