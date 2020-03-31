@@ -1,7 +1,7 @@
 import { connect } from 'mongoose';
 // mongoose initialize
 export const initialize = () => {
-  connect(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopology: true }).then(
+  connect(process.env.MONGODB || '', { useNewUrlParser: true, useUnifiedTopology: true }).then(
     () => {
       console.log('Database connection is successful');
     },

@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken';
 import * as fs from 'fs';
 
-module.exports.sign = (params: any, secret: string) => {
+export const sign = (params: any, secret: string) => {
   // expires in 24 hours
   secret = secret || process.env.SECRET;
   return jwt.sign(params, secret, { expiresIn: '24h' });
 };
 
-module.exports.login = (req: any, res: any) => {
+export const login = (req: any, res: any) => {
   try {
     let token = req.headers['x-access-token'] || req.headers.authorization; // Express headers are auto converted to lowercase
     if (!token) return res.status(401).json({ msg: 'no_exist_token' });
@@ -21,7 +21,7 @@ module.exports.login = (req: any, res: any) => {
   }
 };
 
-module.exports.verify = (req: any, res: any, secret: string) => {
+export const verify = (req: any, res: any, secret: string) => {
   try {
     secret = secret || process.env.SECRET;
     let token = req.headers['x-access-token'] || req.headers.authorization; // Express headers are auto converted to lowercase

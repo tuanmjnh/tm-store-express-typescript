@@ -1,20 +1,12 @@
-process.env.ROOT_PATH = __dirname; // Root path
-// prototypes
-require('./utils/prototypes');
-// config-env
-require('./config/env');
-// config-path
-require('./config/path');
-// Server
-const express = require('express'),
-  bodyParser = require('body-parser'),
-  cors = require('cors'),
-  session = require('express-session'),
-  flash = require('express-flash'),
-  compression = require('compression'),
-  lusca = require('lusca'),
-  router = require('./router'),
-  mongoose = require('./services/mongoose');
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import session from 'express-session';
+import flash from 'express-flash';
+import compression from 'compression';
+import lusca from 'lusca';
+import router from '../router';
+import * as mongoose from './mongoose';
 
 // console.log(process.env.ROOT_PATH)
 // if (process.env.NODE_ENV.toString() === 'development') dotenv.config({ path: '.env.development' })
@@ -73,7 +65,7 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(errorHandler());
 }
 
-let port = process.env.PORT || 8001;
+const port = process.env.PORT || 8001;
 
 /**
  * Primary app routes.
