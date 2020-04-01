@@ -44,4 +44,6 @@ const schema: Schema = new Schema({
   flag: { type: Number, default: 1 },
   created: { type: Object, default: { at: new Date(), by: '', ip: '' } },
 });
-export default model<ICategory>('categories', schema);
+export const MCategory = model<ICategory>('categories', schema);
+schema.index({ code: 'text', title: 'text' });
+export default MCategory;

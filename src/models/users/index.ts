@@ -40,4 +40,5 @@ const schema = new Schema({
   last_change_pass: { type: Date, default: null },
   created: { type: Object, default: { at: new Date(), by: '', ip: '' } },
 });
-export default model<IUser>('users', schema);
+export const MUser = model<IUser>('users', schema);
+export default MUser;

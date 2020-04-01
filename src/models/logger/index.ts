@@ -1,20 +1,21 @@
 import { Document, Schema, model } from 'mongoose';
-export interface ILog extends Document {
-  c: string;
-  cid: Schema.Types.ObjectId;
-  func: string;
-  at: Date;
-  by: Schema.Types.ObjectId;
+export interface ILogger extends Document {
+  userId: Schema.Types.ObjectId;
+  collName: string;
+  collId: Schema.Types.ObjectId;
+  method: string;
+  userAgent: string;
+  at?: Date;
   ip: string;
-  com: string;
 }
 const schema: Schema = new Schema({
-  c: { type: String, required: true },
-  cid: { type: Schema.Types.ObjectId, required: true },
-  func: { type: String, required: true },
-  at: { type: Date, required: true },
-  by: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+  userId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+  collName: { type: String, required: true },
+  collId: { type: Schema.Types.ObjectId, required: true },
+  method: { type: String, required: true },
+  userAgent: { type: String, required: true },
+  at: { type: Date, default: new Date() },
   ip: { type: String, required: true },
-  com: { type: String, required: true },
 });
-export default model<ILog>('logs', schema);
+export const MLogger = model<ILogger>('logger', schema);
+export default MLogger;

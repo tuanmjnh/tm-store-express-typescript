@@ -43,5 +43,6 @@ const schema: Schema = new Schema({
   flag: { type: Number, default: 1 },
   created: { type: Object, default: { at: new Date(), by: '', ip: '' } },
 });
-export default model<INews>('news', schema);
+export const MNews = model<INews>('news', schema);
 schema.index({ code: 'text', title: 'text', author: 'text' });
+export default MNews;

@@ -11,4 +11,5 @@ const schema: Schema = new Schema({
   remember: { type: Boolean, default: false },
   token: { type: String, required: true },
 });
-export default model<IAuth>('auth', schema);
+export const MAuth = model<IAuth>('auth', schema);
+export default MAuth;

@@ -31,7 +31,7 @@ String.prototype.removeChars = function() {
 String.prototype.toHtml = function() {
   if (!this) return this;
   const el = document.createElement('div');
-  el.innerHTML = this;
+  el.innerHTML = this as string;
   const firstChild: any = el.firstChild;
   return firstChild.data;
 };
@@ -41,13 +41,13 @@ Array interface
 */
 // declare global {
 interface Array<T> {
-  pushIfNotExist(element: T, key: string): void;
-  pushIfNotExistUpdate(element: T, key: string): void;
+  pushIfNotExist(element: T | T[], key?: string): void;
+  pushIfNotExistUpdate(element: T, key?: string): void;
   sum(prop: string): number;
 }
 // }
 if (!Array.prototype.pushIfNotExist) {
-  Array.prototype.pushIfNotExist = function<T>(this: T[], element: any, key: string) {
+  Array.prototype.pushIfNotExist = function<T>(this: T[], element: T | T[], key?: string) {
     if (Array.isArray(element)) {
       element.forEach(e => {
         if (key) {
@@ -67,7 +67,7 @@ if (!Array.prototype.pushIfNotExist) {
 }
 
 if (!Array.prototype.pushIfNotExistUpdate) {
-  Array.prototype.pushIfNotExistUpdate = function<T>(this: T[], element: any, key: string) {
+  Array.prototype.pushIfNotExistUpdate = function<T>(this: T[], element: T | T[], key?: string) {
     if (Array.isArray(element)) {
       element.forEach(e => {
         if (key) {

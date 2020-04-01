@@ -7,7 +7,7 @@ export const md5 = value => {
     .digest('hex');
 };
 
-export const NewGuid = (otps = null) => {
+export const NewGuid = (otps?: string) => {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
       .toString(16)

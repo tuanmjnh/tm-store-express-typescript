@@ -22,4 +22,5 @@ const schema = new Schema({
   created_ip: { type: String, default: null },
   flag: { type: Number, default: 1 },
 });
-export default model<IProductImport>('productImports', schema);
+export const MProductImport = model<IProductImport>('productImports', schema);
+export default MProductImport;

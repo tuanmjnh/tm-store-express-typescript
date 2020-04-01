@@ -17,7 +17,7 @@ const schema = new Schema({
   path: { type: String, required: true },
   name: { type: String, required: true },
   component: { type: String, required: true },
-  dependent: { type: mongoose.Schema.Types.ObjectId, default: null },
+  dependent: { type: Schema.Types.ObjectId, default: null },
   level: { type: Number, default: 1 },
   redirect: { type: String, default: null },
   // title: { type: String, default: null },
@@ -29,4 +29,5 @@ const schema = new Schema({
   children: { type: Array, default: null },
   created: { type: Object, default: { at: new Date(), by: '', ip: '' } },
 });
-export default model<IRoute>('routes', schema);
+export const MRoute = model<IRoute>('routes', schema);
+export default MRoute;

@@ -13,4 +13,5 @@ const schema = new Schema({
   quantity: { type: Number, default: 0 },
   amount: { type: Number, default: 0 },
 });
-export default model<IProductExportItems>('productExportItems', schema);
+export const MProductExportItems = model<IProductExportItems>('productExportItems', schema);
+export default MProductExportItems;

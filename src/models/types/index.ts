@@ -20,4 +20,5 @@ const schema = new Schema({
   flag: { type: Number, default: 1 },
   created: { type: Object, default: { at: new Date(), by: '', ip: '' } },
 });
-export default model<IType>('types', schema);
+export const MType = model<IType>('types', schema);
+export default MType;

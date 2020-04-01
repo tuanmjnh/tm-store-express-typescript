@@ -24,4 +24,5 @@ const schema = new Schema({
   // type: 'personal',
   // order: 1,
 });
-export default model<IRole>('products', schema);
+export const MRole = model<IRole>('roles', schema);
+export default MRole;

@@ -37,4 +37,5 @@ const schema = new Schema({
   },
   darkMode: { type: Boolean, default: false },
 });
-export default model<IUserSetting>('userSetting', schema);
+export const MUserSetting = model<IUserSetting>('userSetting', schema);
+export default MUserSetting;

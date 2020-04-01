@@ -53,6 +53,7 @@ const schema = new Schema({
   flag: { type: Number, default: 1 },
   created: { type: Object, default: { at: new Date(), by: '', ip: '' } },
 });
-export default model<IProduct>('products', schema);
+export const MProduct = model<IProduct>('products', schema);
+schema.index({ code: 'text', title: 'text', author: 'text' });
+export default MProduct;
 // module.exports = mongoose.model('products', schema);
-schema.index({ code: 'text', title: 'text', origin: 'text' });

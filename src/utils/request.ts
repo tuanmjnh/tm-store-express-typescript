@@ -1,4 +1,4 @@
-export const ip = (req: any) => {
+export const getIp = (req: any) => {
   // const ip = req.headers['x-real-ip'] || req.connection.remoteAddress;
   // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
   // console.log(req.connection.remoteAddress)
@@ -10,12 +10,17 @@ export const ip = (req: any) => {
   return _ip;
 };
 
-export const host = (req: any) => {
+export const getHost = (req: any) => {
   if (req) return `${req.protocol}://${req.get('host')}`;
   return 'http://127.0.0.1/';
 };
 
-export const hostUrl = (req: any) => {
+export const getHostUrl = (req: any) => {
   if (req) return `${req.protocol}://${req.get('host')}${req.originalUrl}`;
   return 'http://127.0.0.1/';
+};
+
+export const getUserAgent = (req: any) => {
+  if (req) return req.headers['user-agent'];
+  else return 'undefined';
 };
