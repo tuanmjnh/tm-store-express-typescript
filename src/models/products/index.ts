@@ -1,7 +1,7 @@
 import { Document, Schema, model } from 'mongoose';
 import ICreated from '../created';
 export interface IProduct extends Document {
-  categories: Schema.Types.ObjectId;
+  categories: Schema.Types.ObjectId | string;
   title: string;
   code: string;
   desc: string;
@@ -24,7 +24,7 @@ export interface IProduct extends Document {
   // end_at: { type: Date, default: null },
   order: number;
   flag: number;
-  created: ICreated;
+  created?: ICreated;
 }
 const schema = new Schema({
   // type: { type: String, default: null },

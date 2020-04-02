@@ -1,187 +1,210 @@
-const mongoose = require('mongoose'),
-  Model = require('../../models/types'),
-  middleware = require('../../services/middleware'),
-  pagination = require('../../utils/pagination'),
-  request = require('../../utils/request'),
-  logs = require('../../db_apis/logs');
+import Logger from '../../services/logger';
+import Pagination from '../../utils/pagination';
+import { Types } from 'mongoose';
+import { Request, Response, NextFunction } from 'express';
+import { getIp, getUserAgent } from '../../utils/request';
+import { MType } from '../../models/types';
 
-module.exports.select = async function(req, res, next) {
-  try {
-    if (!middleware.verify(req, res)) return
-    let conditions = { $and: [{ flag: req.query.flag ? req.query.flag : 1 }] }
-    if (req.query.key) conditions.$and.push({ key: req.query.key })
-    if (req.query.filter) {
-      conditions.$and.push({
-        $or: [
-          { name: new RegExp(req.query.filter, 'i') },
-          { 'meta.title': new RegExp(req.query.filter, 'i') }
-        ]
-      })
-    }
-    if (!req.query.sortBy) req.query.sortBy = 'orders'
-    req.query.rowsNumber = await Model.where(conditions).countDocuments()
-    const options = {
-      skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
-      limit: parseInt(req.query.rowsPerPage),
-      sort: { key: 1, [req.query.sortBy || 'orders']: req.query.descending === 'true' ? -1 : 1 } // 1 ASC, -1 DESC
-    }
-    Model.find(conditions, null, options, function(e, rs) {
-      if (e) return res.status(500).send(e)
-      // if (!rs) return res.status(404).send('No data exist!')
-      return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs })
-    })
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
-}
-
-module.exports.find = async function(req, res, next) {
-  try {
-    if (!middleware.verify(req, res)) return
-    if (!req.query._id) {
-      if (mongoose.Types.ObjectId.isValid(req.query._id)) {
-        Model.findById(req.query._id, (e, rs) => {
-          if (e) return res.status(500).send(e)
-          if (!rs) return res.status(404).send('no_exist')
-          return res.status(200).json(rs)
-        })
-      } else {
-        return res.status(500).send('invalid')
+class TypesController {
+  public path = '/types';
+  public select = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const conditions = { $and: [{ flag: req.query.flag ? req.query.flag : 1 }] };
+      if (req.query.key) conditions.$and.push({ key: req.query.key } as any);
+      if (req.query.filter) {
+        conditions.$and.push({
+          $or: [{ name: new RegExp(req.query.filter, 'i') }, { 'meta.title': new RegExp(req.query.filter, 'i') }],
+        } as any);
       }
-    } else if (!req.query.key) {
-      Model.findOne({ key: req.query.key }, (e, rs) => {
-        if (e) return res.status(500).send(e)
-        if (!rs) return res.status(404).send('no_exist')
-        return res.status(200).json(rs)
-      })
+      if (!req.query.sortBy) req.query.sortBy = 'orders';
+      req.query.rowsNumber = await MType.where(conditions as any).countDocuments();
+      const options = {
+        skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
+        limit: parseInt(req.query.rowsPerPage),
+        sort: { key: 1, [req.query.sortBy || 'orders']: req.query.descending === 'true' ? -1 : 1 }, // 1 ASC, -1 DESC
+      };
+      MType.find(conditions, null, options, (e: any, rs: any) => {
+        if (e) return res.status(500).send(e);
+        // if (!rs) return res.status(404).send('No data exist!')
+        return res.status(200).json({ rowsNumber: req.query.rowsNumber, data: rs });
+      });
+    } catch (e) {
+      return res.status(500).send('invalid');
     }
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
-}
+  };
 
-module.exports.getKey = async function(req, res, next) {
-  try {
-    if (!middleware.verify(req, res)) return
-    Model.distinct('key', req.body.conditions, (e, rs) => {
-      if (e) return res.status(500).send(e)
-      if (req.query.filter) rs = rs.filter(x => new RegExp(req.query.filter, 'i').test(x))
-      const rowsNumber = rs.length
-      if (req.query.page && req.query.rowsPerPage) rs = pagination.get(rs, req.query.page, req.query.rowsPerPage)
-      return res.status(200).json({ rowsNumber: rowsNumber, data: rs })
-    })
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
-}
-
-module.exports.getMeta = async function(req, res, next) {
-  try {
-    Model.distinct(req.query.key ? 'meta.key' : 'meta.value', null, (e, rs) => {
-      if (e) return res.status(500).send(e)
-      if (req.query.filter) rs = rs.filter(x => new RegExp(req.query.filter, 'i').test(x))
-      const rowsNumber = rs.length
-      if (req.query.page && req.query.rowsPerPage) rs = pagination.get(rs, req.query.page, req.query.rowsPerPage)
-      return res.status(200).json({ rowsNumber: rowsNumber, data: rs })
-    })
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
-}
-
-module.exports.insert = async function(req, res, next) {
-  try {
-    const verify = middleware.verify(req, res)
-    if (!verify) return
-    // if (!req.body || Object.keys(req.body).length < 1 || req.body.key.length < 1 || req.body.name.length < 1) {
-    //   return res.status(500).send('invalid')
-    // }
-    const x = await Model.findOne({ key: req.body.key, code: req.body.code })
-    if (x) return res.status(501).send('exist')
-    req.body.created = { at: new Date(), by: verify._id, ip: request.ip(req) }
-    const data = new Model(req.body)
-    // data.validate()
-    data.save((e, rs) => {
-      if (e) return res.status(500).send(e)
-      // Push logs
-      logs.push(req, { user_id: verify._id, collection: 'types', collection_id: rs._id, method: 'insert' })
-      return res.status(201).json(rs)
-    })
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
-}
-
-module.exports.update = async function(req, res, next) {
-  try {
-    const verify = middleware.verify(req, res)
-    if (!verify) return
-    // if (!req.params.id) return res.status(500).send('Incorrect Id!')
-    if (!req.body || Object.keys(req.body).length < 1) return res.status(500).send('invalid')
-    const x = await Model.findOne({ _id: { $nin: [req.body._id] }, key: req.body.key, code: req.body.code })
-    if (x) return res.status(501).send('exist')
-    if (mongoose.Types.ObjectId.isValid(req.body._id)) {
-      Model.updateOne({ _id: req.body._id }, {
-        $set: {
-          key: req.body.key,
-          code: req.body.code,
-          name: req.body.name,
-          desc: req.body.desc,
-          meta: req.body.meta,
-          orders: req.body.orders,
-          flag: req.body.flag
+  public find = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.query._id) {
+        if (Types.ObjectId.isValid(req.query._id)) {
+          MType.findById(req.query._id, (e, rs) => {
+            if (e) return res.status(500).send(e);
+            if (!rs) return res.status(404).send('no_exist');
+            return res.status(200).json(rs);
+          });
+        } else {
+          return res.status(500).send('invalid');
         }
-      }, (e, rs) => { // { multi: true, new: true },
-        if (e) return res.status(500).send(e)
-        // Push logs
-        logs.push(req, { user_id: verify._id, collection: 'types', collection_id: req.body._id, method: 'update' })
-        return res.status(202).json(rs)
-      })
-    } else {
-      return res.status(500).send('invalid')
-    }
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
-}
-
-module.exports.lock = async function(req, res, next) {
-  try {
-    const verify = middleware.verify(req, res)
-    if (!verify) return
-    let rs = { success: [], error: [] }
-    for await (let _id of req.body._id) {
-      const x = await Model.findById(_id)
-      if (x) {
-        var _x = await Model.updateOne({ _id: _id }, { $set: { flag: x.flag === 1 ? 0 : 1 } })
-        if (_x.nModified) {
-          rs.success.push(_id)
-          // Push logs
-          logs.push(req, { user_id: verify._id, collection: 'types', collection_id: _id, method: x.flag === 1 ? 'lock' : 'unlock' })
-        } else rs.error.push(_id)
+      } else if (!req.query.key) {
+        MType.findOne({ key: req.query.key }, (e, rs) => {
+          if (e) return res.status(500).send(e);
+          if (!rs) return res.status(404).send('no_exist');
+          return res.status(200).json(rs);
+        });
       }
+    } catch (e) {
+      return res.status(500).send('invalid');
     }
-    return res.status(203).json(rs)
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
-}
+  };
 
-module.exports.delete = async function(req, res, next) {
-  try {
-    const verify = middleware.verify(req, res)
-    if (!verify) return
-    if (mongoose.Types.ObjectId.isValid(req.params._id)) {
-      Model.deleteOne({ _id: req.params._id }, (e, rs) => {
-        if (e) return res.status(500).send(e)
-        // Push logs
-        logs.push(req, { user_id: verify._id, collection: 'types', collection_id: req.params._id, method: 'delete' })
-        return res.status(204).json(rs)
-      })
-    } else {
-      return res.status(500).send('invalid')
+  public getKey = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      MType.distinct('key', req.body.conditions, (e, rs) => {
+        if (e) return res.status(500).send(e);
+        if (req.query.filter) rs = rs.filter(x => new RegExp(req.query.filter, 'i').test(x));
+        const rowsNumber = rs.length;
+        if (req.query.page && req.query.rowsPerPage) rs = Pagination.get(rs, req.query.page, req.query.rowsPerPage);
+        return res.status(200).json({ rowsNumber, data: rs });
+      });
+    } catch (e) {
+      return res.status(500).send('invalid');
     }
-  } catch (e) {
-    return res.status(500).send('invalid')
-  }
+  };
+
+  public getMeta = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      MType.distinct(req.query.key ? 'meta.key' : 'meta.value', null, (e, rs) => {
+        if (e) return res.status(500).send(e);
+        if (req.query.filter) rs = rs.filter(x => new RegExp(req.query.filter, 'i').test(x));
+        const rowsNumber = rs.length;
+        if (req.query.page && req.query.rowsPerPage) rs = Pagination.get(rs, req.query.page, req.query.rowsPerPage);
+        return res.status(200).json({ rowsNumber, data: rs });
+      });
+    } catch (e) {
+      return res.status(500).send('invalid');
+    }
+  };
+
+  public insert = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // if (!req.body || Object.keys(req.body).length < 1 || req.body.key.length < 1 || req.body.name.length < 1) {
+      //   return res.status(500).send('invalid')
+      // }
+      const x = await MType.findOne({ key: req.body.key, code: req.body.code });
+      if (x) return res.status(501).send('exist');
+      req.body.created = { at: new Date(), by: req.verify._id, ip: getIp(req) };
+      const data = new MType(req.body);
+      // data.validate()
+      data.save((e, rs) => {
+        if (e) return res.status(500).send(e);
+        // Push logs
+        Logger.set({
+          userId: req.verify._id,
+          collName: 'types',
+          collId: rs._id,
+          method: 'insert',
+          ip: getIp(req),
+          userAgent: getUserAgent(req),
+        });
+        return res.status(201).json(rs);
+      });
+    } catch (e) {
+      return res.status(500).send('invalid');
+    }
+  };
+
+  public update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // if (!req.params.id) return res.status(500).send('Incorrect Id!')
+      if (!req.body || Object.keys(req.body).length < 1) return res.status(500).send('invalid');
+      const x = await MType.findOne({ _id: { $nin: [req.body._id] }, key: req.body.key, code: req.body.code });
+      if (x) return res.status(501).send('exist');
+      if (Types.ObjectId.isValid(req.body._id)) {
+        MType.updateOne(
+          { _id: req.body._id },
+          {
+            $set: {
+              key: req.body.key,
+              code: req.body.code,
+              name: req.body.name,
+              desc: req.body.desc,
+              meta: req.body.meta,
+              orders: req.body.orders,
+              flag: req.body.flag,
+            },
+          },
+          (e, rs) => {
+            // { multi: true, new: true },
+            if (e) return res.status(500).send(e);
+            // Push logs
+            Logger.set({
+              userId: req.verify._id,
+              collName: 'types',
+              collId: rs._id,
+              method: 'update',
+              ip: getIp(req),
+              userAgent: getUserAgent(req),
+            });
+            return res.status(202).json(rs);
+          },
+        );
+      } else {
+        return res.status(500).send('invalid');
+      }
+    } catch (e) {
+      return res.status(500).send('invalid');
+    }
+  };
+
+  public lock = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const rs = { success: [] as string[], error: [] as string[] };
+      for await (const _id of req.body._id) {
+        const x = await MType.findById(_id);
+        if (x) {
+          const _x = await MType.updateOne({ _id }, { $set: { flag: x.flag === 1 ? 0 : 1 } });
+          if (_x.nModified) {
+            rs.success.push(_id);
+            // Push logs
+            Logger.set({
+              userId: req.verify._id,
+              collName: 'types',
+              collId: _id,
+              method: x.flag === 1 ? 'lock' : 'unlock',
+              ip: getIp(req),
+              userAgent: getUserAgent(req),
+            });
+          } else rs.error.push(_id);
+        }
+      }
+      return res.status(203).json(rs);
+    } catch (e) {
+      return res.status(500).send('invalid');
+    }
+  };
+
+  public delete = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (Types.ObjectId.isValid(req.params._id)) {
+        MType.deleteOne({ _id: req.params._id }, (e: any) => {
+          if (e) return res.status(500).send(e);
+          // Push logs
+          Logger.set({
+            userId: req.verify._id,
+            collName: 'types',
+            collId: req.params._id,
+            method: 'delete',
+            ip: getIp(req),
+            userAgent: getUserAgent(req),
+          });
+          return res.status(204).json(true);
+        });
+      } else {
+        return res.status(500).send('invalid');
+      }
+    } catch (e) {
+      return res.status(500).send('invalid');
+    }
+  };
 }
+export default new TypesController();

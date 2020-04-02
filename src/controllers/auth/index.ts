@@ -1,5 +1,5 @@
-import { md5 } from '../../utils/crypto';
-import { IUser, MUser } from '../../models/users';
+import { MD5Hash } from '../../utils/crypto';
+import { MUser } from '../../models/users';
 import { IRole, MRole } from '../../models/roles';
 import { IRoute, MRoute } from '../../models/routes';
 import * as middleware from '../../services/middleware';
@@ -93,7 +93,7 @@ class AuthController {
       // not exist username
       if (!rs) return res.status(502).json({ msg: 'no_exist' });
       // check password
-      if (rs.password !== md5(req.body.password + rs.salt)) return res.status(503).json({ msg: 'no_exist' });
+      if (rs.password !== MD5Hash(req.body.password + rs.salt)) return res.status(503).json({ msg: 'no_exist' });
       // check lock
       if (!rs.enable) return res.status(504).json({ msg: 'locked' });
       // Routes
@@ -117,4 +117,4 @@ class AuthController {
   };
 }
 
-export default AuthController;
+export default new AuthController();

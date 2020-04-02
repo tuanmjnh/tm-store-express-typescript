@@ -5,12 +5,30 @@ import * as path from 'path';
 // const public_path = path.join(__dirname, `..\\${process.env.PUBLIC_DIR}`)
 // module.exports.public_path = public_path
 // const upload_path = `${process.env.PUBLIC_PATH}\\${process.env.UPLOAD_DIR}`
-export const createDir = async (opts: any) => {
+interface IOptionIO {
+  dir: string;
+  root?: string;
+  parent?: string;
+  host?: string;
+}
+interface IFileIO {
+  id: number;
+  name: string;
+  fullName: string;
+  path?: string;
+  fullPath?: string;
+  icon: string;
+  size?: number;
+  ext?: string;
+  isFile: boolean;
+  children?: IFileIO[];
+}
+export const createDir = async (dir: string) => {
   try {
-    const listDir = opts.dir.replace(/^\/|\/$/g, '').split('/');
+    const listDir = dir.replace(/^\/|\/$/g, '').split('/');
     const result = {
       path: process.env.UPLOAD_DIR,
-      list: [],
+      list: [] as string[],
     };
     // create public if not exist
     if (!fs.existsSync(result.path)) await fs.mkdirSync(result.path);
@@ -42,56 +60,64 @@ export const rename = async (oldPath: string, newPath: string) => {
   }
 };
 
-export const getExtention = (dir: any, dot: boolean = true) => {
+export const getExtention = (dir: string, dot: boolean = true) => {
   if (!dir) return '';
   const regx = /(?:\.([^.]+))?$/;
-  dir = regx.exec(dir);
-  return dir ? (dot ? dir[0] : dir[1]) : '';
+  const rs = regx.exec(dir);
+  if (rs) {
+    return dir ? (dot ? rs[0] : rs[1]) : '';
+  } else {
+    return null;
+  }
 };
 
-export const getFolder = ({ dir, root, host }) => {
-  const result = [];
-  root = root || process.env.PUBLIC_DIR;
-  const _dir = path.join(root, dir);
+export const getFolder = (opt: IOptionIO) => {
+  //  { dir, root, host }
+  const result: IFileIO[] = [];
+  opt.root = opt.root || process.env.PUBLIC_DIR;
+  const _dir = path.join(opt.root, opt.dir);
   const dirs = fs.readdirSync(_dir);
   // for (const i in dirs) {
   for (let i = 0; i < dirs.length; i++) {
     const stat = fs.statSync(path.join(_dir, dirs[i]));
-    const isDirectory = stat.isDirectory();
-    const item = {
+    const _isFile = stat.isFile();
+    const item: IFileIO = {
       id: stat.ino,
-      name: dir[i],
-      fullName: isDirectory ? `${dir}/${dirs[i]}` : `${host}/${dir}/${dirs[i]}`,
+      name: opt.dir[i],
+      fullName: _isFile ? `${opt.host}/${opt.dir}/${dirs[i]}` : `${opt.dir}/${dirs[i]}`,
       size: stat.size,
-      ext: path.extname(dir[i]),
-      icon: stat.isDirectory() ? 'folder' : 'file',
+      ext: path.extname(opt.dir[i]),
+      isFile: _isFile,
+      icon: _isFile ? 'file' : 'folder',
     };
     result.push(item);
   }
   return result;
 };
 
-export const getAllFolder = ({ dir, parent, root, host }) => {
-  let result = [];
-  root = root || process.env.PUBLIC_DIR;
-  const _dir = path.join(root, dir);
+export const getAllFolder = (opt: IOptionIO) => {
+  // ({ dir, parent, root, host }) => {
+  let result: IFileIO[] = [];
+  opt.root = opt.root || process.env.PUBLIC_DIR;
+  const _dir = path.join(opt.root, opt.dir);
   const dirs = fs.readdirSync(_dir);
   // for (const i in dirs) {
   for (let i = 0; i < dirs.length; i++) {
     const stat = fs.statSync(path.join(_dir, dirs[i]));
-    const isDirectory = stat.isDirectory();
-    const item = {
+    const _isFile = stat.isFile();
+    const item: IFileIO = {
       id: stat.ino,
-      name: dir[i],
-      fullName: isDirectory ? `${dir}/${dirs[i]}` : `${host}/${dir}/${dirs[i]}`,
-      path: parent ? parent : dir,
-      fullPath: dir,
+      name: opt.dir[i],
+      fullName: _isFile ? `${opt.host}/${opt.dir}/${dirs[i]}` : `${opt.dir}/${dirs[i]}`,
+      path: opt.parent ? opt.parent : opt.dir,
+      fullPath: opt.dir,
       size: stat.size,
-      ext: path.extname(dir[i]),
-      icon: isDirectory ? 'folder' : 'file',
+      ext: path.extname(opt.dir[i]),
+      isFile: _isFile,
+      icon: _isFile ? 'file' : 'folder',
     };
-    if (isDirectory) {
-      const items = getAllFolder({ dir: item.fullName, parent: item.name, host, root: null });
+    if (_isFile) {
+      const items = getAllFolder({ dir: item.fullName, parent: item.name, host: opt.host });
       if (items && items.length) result = [...result, ...items];
     }
     result.push(item);
@@ -99,19 +125,21 @@ export const getAllFolder = ({ dir, parent, root, host }) => {
   return result;
 };
 
-export const getDirectories = ({ dir, root }) => {
-  const result = [];
-  root = root || process.env.PUBLIC_DIR;
-  const _dir = path.join(root, dir);
+export const getDirectories = (opt: IOptionIO) => {
+  // ({ dir, root }) => {
+  const result: IFileIO[] = [];
+  opt.root = opt.root || process.env.PUBLIC_DIR;
+  const _dir = path.join(opt.root, opt.dir);
   const dirs = fs.readdirSync(_dir);
   for (const i of dirs) {
     // for (let i = 0; i < dirs.length; i++) {
     const stat = fs.statSync(path.join(_dir, dirs[i]));
-    const item = {
+    const item: IFileIO = {
       id: stat.ino,
       name: dirs[i],
-      fullName: `${dir}/${dirs[i]}`,
-      fullPath: dir,
+      fullName: `${opt.dir}/${dirs[i]}`,
+      fullPath: opt.dir,
+      isFile: false,
       icon: 'folder',
     };
     if (stat.isDirectory()) result.push(item);
@@ -119,48 +147,51 @@ export const getDirectories = ({ dir, root }) => {
   return result;
 };
 
-export const getAllDirectories = ({ dir, parent, root }) => {
-  const result = [];
-  root = root || process.env.PUBLIC_DIR;
+export const getAllDirectories = (opt: IOptionIO) => {
+  // ({ dir, parent, root }) => {
+  const result: IFileIO[] = [];
+  opt.root = opt.root || process.env.PUBLIC_DIR;
   // root = root || `./${process.env.PUBLIC_PATH}`
-  const _dir = path.join(root, dir);
+  const _dir = path.join(opt.root, opt.dir);
   const dirs = fs.readdirSync(_dir);
   for (const i of dirs) {
     // for (let i = 0; i < dirs.length; i++) {
     // const _path = `${_dir}\\${dirs[i]}`
     const stat = fs.statSync(path.join(_dir, dirs[i]));
-    const item = {
+    const item: IFileIO = {
       id: stat.ino,
       name: dirs[i],
-      fullName: `${dir}/${dirs[i]}`,
-      path: parent ? parent : dir,
-      fullPath: dir,
+      fullName: `${opt.dir}/${dirs[i]}`,
+      path: opt.parent ? opt.parent : opt.dir,
+      fullPath: opt.dir,
       icon: 'folder',
-      isDirectory: stat.isDirectory(),
+      isFile: stat.isFile(),
       children: [],
     };
-    if (item.isDirectory) {
-      item.children = getAllDirectories({ dir: item.fullName, parent: item.name, root: null });
+    if (!item.isFile) {
+      item.children = getAllDirectories({ dir: item.fullName, parent: item.name });
       result.push(item);
     }
   }
   return result;
 };
 
-export const getFiles = ({ dir, root, host }) => {
-  const result = [];
-  root = root || process.env.PUBLIC_DIR;
-  const _dir = path.join(root, dir);
+export const getFiles = (opt: IOptionIO) => {
+  // ({ dir, root, host }) => {
+  const result: IFileIO[] = [];
+  opt.root = opt.root || process.env.PUBLIC_DIR;
+  const _dir = path.join(opt.root, opt.dir);
   const dirs = fs.readdirSync(_dir);
   for (const i of dirs) {
     // for (let i = 0; i < dirs.length; i++) {
     const stat = fs.statSync(path.join(_dir, dirs[i]));
-    const item = {
+    const item: IFileIO = {
       id: stat.ino,
       name: dirs[i],
-      fullName: `${host}/${dir}/${dirs[i]}`,
+      fullName: `${opt.host}/${opt.dir}/${dirs[i]}`,
       size: stat.size,
       ext: path.extname(dirs[i]),
+      isFile: stat.isFile(),
       icon: 'file',
     };
     if (stat.isFile()) result.push(item);
@@ -168,26 +199,28 @@ export const getFiles = ({ dir, root, host }) => {
   return result;
 };
 
-export const getAllFiles = ({ dir, root, parent, host }) => {
-  let result = [];
-  root = root || process.env.PUBLIC_DIR;
-  const _dir = path.join(root, dir);
+export const getAllFiles = (opt: IOptionIO) => {
+  // ({ dir, root, parent, host }) => {
+  let result: IFileIO[] = [];
+  opt.root = opt.root || process.env.PUBLIC_DIR;
+  const _dir = path.join(opt.root, opt.dir);
   const dirs = fs.readdirSync(_dir);
   for (const i of dirs) {
     // for (let i = 0; i < dirs.length; i++) {
     const stat = fs.statSync(path.join(_dir, dirs[i]));
-    const item = {
+    const item: IFileIO = {
       id: stat.ino,
       name: dirs[i],
-      fullName: `${host}/${dir}/${dirs[i]}`,
-      path: parent ? parent : dir,
-      fullPath: dir,
+      fullName: `${opt.host}/${opt.dir}/${dirs[i]}`,
+      path: opt.parent ? opt.parent : opt.dir,
+      fullPath: opt.dir,
       size: stat.size,
       ext: path.extname(dirs[i]),
+      isFile: stat.isFile(),
       icon: 'file',
     };
     if (stat.isDirectory()) {
-      const items = getAllFiles({ dir: item.fullName, parent: item.name, host, root: null });
+      const items = getAllFiles({ dir: item.fullName, parent: item.name, host: opt.host });
       if (items && items.length) result = [...result, ...items];
     }
     if (stat.isFile()) result.push(item);

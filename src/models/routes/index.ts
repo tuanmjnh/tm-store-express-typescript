@@ -4,7 +4,7 @@ export interface IRoute extends Document {
   path: string;
   name: string;
   component: string;
-  dependent: Schema.Types.ObjectId;
+  dependent: Schema.Types.ObjectId | null;
   level: number;
   redirect: string;
   orders: number;

@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 const SECRET = '48955e33-5871-3982-3c1e-e127e7714958';
 
-export const md5 = value => {
+export const MD5Hash = value => {
   return createHash('md5')
     .update(value + SECRET)
     .digest('hex');

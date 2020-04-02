@@ -1,11 +1,11 @@
+import Logger from '../../services/logger';
+import Pagination from '../../utils/pagination';
 import { Types } from 'mongoose';
-import { ICategory, MCategory } from '../../models/categories';
 import { Request, Response, NextFunction } from 'express';
 import { getIp, getUserAgent } from '../../utils/request';
-import Pagination from '../../utils/pagination';
-import logger from '../../services/logger';
+import { MCategory } from '../../models/categories';
 
-class CategoryController {
+class CategoriesController {
   public path = '/categories';
   public select = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -88,7 +88,7 @@ class CategoryController {
       data.save((e, rs) => {
         if (e) return res.status(500).send(e);
         // Push logs
-        logger.set({
+        Logger.set({
           userId: req.verify._id,
           collName: 'categories',
           collId: rs._id,
@@ -141,7 +141,7 @@ class CategoryController {
             // { multi: true, new: true },
             if (e) return res.status(500).send(e);
             // Push logs
-            logger.set({
+            Logger.set({
               userId: req.verify._id,
               collName: 'categories',
               collId: rs._id,
@@ -203,7 +203,7 @@ class CategoryController {
           if (_x.nModified) {
             rs.success.push(_id);
             // Push logs
-            logger.set({
+            Logger.set({
               userId: req.verify._id,
               collName: 'categories',
               collId: _id,
@@ -223,10 +223,10 @@ class CategoryController {
   public delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (Types.ObjectId.isValid(req.params._id)) {
-        MCategory.deleteOne({ _id: req.params._id }, e => {
+        MCategory.deleteOne({ _id: req.params._id }, (e: any) => {
           if (e) return res.status(500).send(e);
           // Push logs
-          logger.set({
+          Logger.set({
             userId: req.verify._id,
             collName: 'categories',
             collId: req.params._id,
@@ -244,4 +244,4 @@ class CategoryController {
     }
   };
 }
-export default CategoryController;
+export default new CategoriesController();
