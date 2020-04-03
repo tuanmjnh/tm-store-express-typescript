@@ -11,11 +11,12 @@
   },
   "scripts": {
     "start": "set NODE_ENV=production & node src/server.js",
-    "dev": "set NODE_ENV=development & ts-node-dev --no-notify -- ./src/server.ts",
+    "dev": "set NODE_ENV=development & ts-node-dev --no-notify ./src/server.ts",
     "dev:nodemon": "set NODE_ENV=development & tsc -w & nodemon -q -w dist dist/main.js",
     "test": "echo \\\"Error: no test specified\\\" && exit 1",
     "build": "webpack --color --mode production",
     "build:ts": "tsc",
+    "copy": "cp -r ./src/ ./.env",
     "mongo:start": "net start MongoDB",
     "mongo:stop": "net stop MongoDB",
     "mongo:remove": "\"C:\\MongoDB\\mongod.exe\" — remove"

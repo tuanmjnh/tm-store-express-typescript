@@ -5,8 +5,9 @@ interface String {
   convertToAscii(): string;
   removeChars(): string;
   toHtml(): string;
+  trimChars(char: string): string;
 }
-String.prototype.convertToAscii = function() {
+String.prototype.convertToAscii = function () {
   // let $this = String(this)
   return (
     this.toLowerCase()
@@ -24,16 +25,20 @@ String.prototype.convertToAscii = function() {
   );
 };
 
-String.prototype.removeChars = function() {
+String.prototype.removeChars = function () {
   return this.replace(/[~`!@#$%^&*()\[{}\]\\|;:\'\",<>./?]/g, '');
 };
 
-String.prototype.toHtml = function() {
-  if (!this) return this;
+String.prototype.toHtml = function () {
   const el = document.createElement('div');
   el.innerHTML = this as string;
   const firstChild: any = el.firstChild;
   return firstChild.data;
+};
+
+String.prototype.trimChars = function (char: string) {
+  const regx = new RegExp(char + '$', 'g');
+  return this.replace(regx, '');
 };
 
 /*
@@ -47,9 +52,9 @@ interface Array<T> {
 }
 // }
 if (!Array.prototype.pushIfNotExist) {
-  Array.prototype.pushIfNotExist = function<T>(this: T[], element: T | T[], key?: string) {
+  Array.prototype.pushIfNotExist = function <T>(this: T[], element: T | T[], key?: string) {
     if (Array.isArray(element)) {
-      element.forEach(e => {
+      element.forEach((e) => {
         if (key) {
           if (this.findIndex((x: any) => x[key] === e[key]) < 0) this.push(e);
         } else {
@@ -67,9 +72,9 @@ if (!Array.prototype.pushIfNotExist) {
 }
 
 if (!Array.prototype.pushIfNotExistUpdate) {
-  Array.prototype.pushIfNotExistUpdate = function<T>(this: T[], element: T | T[], key?: string) {
+  Array.prototype.pushIfNotExistUpdate = function <T>(this: T[], element: T | T[], key?: string) {
     if (Array.isArray(element)) {
-      element.forEach(e => {
+      element.forEach((e) => {
         if (key) {
           const item: any = this.find((x: any) => x[key] === e[key]);
           if (item) {
@@ -85,7 +90,7 @@ if (!Array.prototype.pushIfNotExistUpdate) {
       if (key) {
         const item: any = this.find((x: any) => x[key] === element[key]);
         if (item) {
-          Object.keys(item).forEach(k => {
+          Object.keys(item).forEach((k) => {
             item[k] = element[k];
           });
         } else this.push(element);
@@ -97,7 +102,7 @@ if (!Array.prototype.pushIfNotExistUpdate) {
   };
 }
 if (!Array.prototype.sum) {
-  Array.prototype.sum = function<T>(this: T[], prop: string) {
+  Array.prototype.sum = function <T>(this: T[], prop: string) {
     let total = 0;
     for (let i = 0, _len = this.length; i < _len; i++) {
       const val = this[i][prop];

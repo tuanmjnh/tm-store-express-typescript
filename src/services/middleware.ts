@@ -64,9 +64,11 @@ export const sign = (params: any, secret?: string) => {
 
 export const verify = (req: Request, res: Response, next: NextFunction) => {
   try {
+    const baseUrl = process.env.BASE_URL.trimChars('/'); // .replace(/\/$/, '');
+    const reqPath = req.path.trimChars('/');
     if (
-      (req.path === process.env.BASE_URL && req.method.toUpperCase() === 'GET') ||
-      (req.path === `${process.env.BASE_URL}api/auth` && req.method.toUpperCase() === 'POST')
+      (reqPath === baseUrl && req.method.toUpperCase() === 'GET') ||
+      (reqPath === `${baseUrl}api/auth` && req.method.toUpperCase() === 'POST')
     ) {
       next();
       return null;
