@@ -64,6 +64,13 @@ export const sign = (params: any, secret?: string) => {
 
 export const verify = (req: Request, res: Response, next: NextFunction) => {
   try {
+    if (
+      (req.path === process.env.BASE_URL && req.method.toUpperCase() === 'GET') ||
+      (req.path === `${process.env.BASE_URL}api/auth` && req.method.toUpperCase() === 'POST')
+    ) {
+      next();
+      return null;
+    }
     const secret = process.env.SECRET;
     let token = (req.headers['x-access-token'] || req.headers.authorization) as string; // Express headers are auto converted to lowercase
     if (!token) {

@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 
 export const getBody = (obj: any, req: any) => {
   // req: Request
@@ -34,7 +34,7 @@ export const RandomDate = (start: Date, end: Date) => {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 };
 
-export const ToDate = (timestamp: number, format: string = null) => {
+export const ToDate = (timestamp: number, format: string = '') => {
   if (format) {
     return moment(timestamp).format(format);
   } else {

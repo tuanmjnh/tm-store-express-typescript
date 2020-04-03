@@ -26,7 +26,7 @@ class ProductsController {
       const options = {
         skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
         limit: parseInt(req.query.rowsPerPage),
-        sort: { [req.query.sortBy || 'orders']: req.query.descending === 'true' ? -1 : 1 }, // 1 ASC, -1 DESC
+        sort: { [req.query.sortBy || 'orders']: req.query.descending === 'true' ? -1 : 1 } // 1 ASC, -1 DESC
       };
       MProduct.find(conditions, null, options, (e, rs) => {
         if (e) return res.status(500).send(e);
@@ -45,16 +45,14 @@ class ProductsController {
         if (Types.ObjectId.isValid(req.query._id)) {
           MProduct.findById(req.query._id, (e, rs) => {
             if (e) return res.status(500).send(e);
-            if (!rs) return res.status(404).send('no_exist');
             return res.status(200).json(rs);
           });
         } else {
           return res.status(500).send('invalid');
         }
-      } else if (req.query.code) {
+      } else {
         MProduct.findOne({ code: req.query.code }, (e, rs) => {
           if (e) return res.status(500).send(e);
-          if (!rs) return res.status(404).send('no_exist');
           return res.status(200).json(rs);
         });
       }
@@ -113,7 +111,7 @@ class ProductsController {
           collId: rs._id,
           method: 'insert',
           ip: getIp(req),
-          userAgent: getUserAgent(req),
+          userAgent: getUserAgent(req)
         });
         return res.status(201).json(rs);
       });
@@ -178,8 +176,8 @@ class ProductsController {
               // start_at: req.body.start_at,
               // end_at: req.body.end_at,
               order: parseInt(req.body.order),
-              flag: parseInt(req.body.flag),
-            },
+              flag: parseInt(req.body.flag)
+            }
           },
           (e, rs) => {
             // { multi: true, new: true },
@@ -191,10 +189,10 @@ class ProductsController {
               collId: rs._id,
               method: 'update',
               ip: getIp(req),
-              userAgent: getUserAgent(req),
+              userAgent: getUserAgent(req)
             });
             return res.status(202).json(rs);
-          },
+          }
         );
       } else {
         return res.status(500).send('invalid');
@@ -220,7 +218,7 @@ class ProductsController {
               collId: _id,
               method: x.flag === 1 ? 'lock' : 'unlock',
               ip: getIp(req),
-              userAgent: getUserAgent(req),
+              userAgent: getUserAgent(req)
             });
           } else rs.error.push(_id);
         }
@@ -243,7 +241,7 @@ class ProductsController {
             collId: req.params._id,
             method: 'delete',
             ip: getIp(req),
-            userAgent: getUserAgent(req),
+            userAgent: getUserAgent(req)
           });
           return res.status(204).json(true);
         });

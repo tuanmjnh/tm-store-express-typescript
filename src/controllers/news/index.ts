@@ -26,7 +26,7 @@ class NewsController {
       const options = {
         skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
         limit: parseInt(req.query.rowsPerPage),
-        sort: { [req.query.sortBy || 'level']: req.query.descending === 'true' ? -1 : 1 }, // 1 ASC, -1 DESC
+        sort: { [req.query.sortBy || 'level']: req.query.descending === 'true' ? -1 : 1 } // 1 ASC, -1 DESC
       };
       MNews.find(conditions, null, options, (e, rs) => {
         if (e) return res.status(500).send(e);
@@ -40,20 +40,18 @@ class NewsController {
 
   public find = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      if (!req.query._id) {
+      if (req.query._id) {
         if (Types.ObjectId.isValid(req.query._id)) {
           MNews.findById(req.query._id, (e, rs) => {
             if (e) return res.status(500).send(e);
-            if (!rs) return res.status(404).send('no_exist');
             return res.status(200).json(rs);
           });
         } else {
           return res.status(500).send('invalid');
         }
-      } else if (!req.query.key) {
+      } else {
         MNews.findOne({ key: req.query.key }, (e, rs) => {
           if (e) return res.status(500).send(e);
-          if (!rs) return res.status(404).send('no_exist');
           return res.status(200).json(rs);
         });
       }
@@ -94,7 +92,7 @@ class NewsController {
           collId: rs._id,
           method: 'insert',
           ip: getIp(req),
-          userAgent: getUserAgent(req),
+          userAgent: getUserAgent(req)
         });
         return res.status(201).json(rs);
       });
@@ -131,8 +129,8 @@ class NewsController {
               start_at: req.body.start_at,
               end_at: req.body.end_at,
               orders: req.body.orders,
-              flag: req.body.flag,
-            },
+              flag: req.body.flag
+            }
           },
           (e, rs) => {
             // { multi: true, new: true },
@@ -144,10 +142,10 @@ class NewsController {
               collId: rs._id,
               method: 'update',
               ip: getIp(req),
-              userAgent: getUserAgent(req),
+              userAgent: getUserAgent(req)
             });
             return res.status(202).json(rs);
-          },
+          }
         );
       } else {
         return res.status(500).send('invalid');
@@ -173,7 +171,7 @@ class NewsController {
               collId: _id,
               method: x.flag === 1 ? 'lock' : 'unlock',
               ip: getIp(req),
-              userAgent: getUserAgent(req),
+              userAgent: getUserAgent(req)
             });
           } else rs.error.push(_id);
         }
@@ -196,7 +194,7 @@ class NewsController {
             collId: req.params._id,
             method: 'delete',
             ip: getIp(req),
-            userAgent: getUserAgent(req),
+            userAgent: getUserAgent(req)
           });
           return res.status(204).json(true);
         });

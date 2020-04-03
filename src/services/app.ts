@@ -4,13 +4,13 @@ import cors from 'cors';
 import session from 'express-session';
 import flash from 'express-flash';
 import compression from 'compression';
-import lusca from 'lusca';
+// import lusca from 'lusca';
 import { Routes } from '../router';
 import * as mongoose from './mongoose';
 import middleware from './middleware';
 class App {
   public app: express.Application;
-  public routePrv: Routes = new Routes();
+  public Routes = new Routes();
   constructor() {
     // Connection MongoDB
     mongoose.initialize();
@@ -18,8 +18,6 @@ class App {
     this.app = express();
     // Config
     this.config();
-    // Routes
-    this.routePrv.routes(this.app);
   }
   private config(): void {
     // trust proxy ip
@@ -49,28 +47,28 @@ class App {
       session({
         resave: true,
         saveUninitialized: true,
-        secret: process.env.SECRET,
+        secret: process.env.SECRET
         // store: new MongoStore({
         //   url: mongoUrl,
         //   autoReconnect: true
         // })
-      }),
+      })
     );
     // lusca
-    this.app.use(
-      lusca({
-        csrf: true,
-        // csp: {
-        //   /* ... */
-        // },
-        xframe: 'SAMEORIGIN',
-        p3p: 'ABCDEF',
-        hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
-        xssProtection: true,
-        nosniff: true,
-        referrerPolicy: 'same-origin',
-      }),
-    );
+    // this.app.use(
+    // lusca({
+    // csrf: true,
+    // csp: {
+    //   /* ... */
+    // },
+    //     xframe: 'SAMEORIGIN',
+    //     p3p: 'ABCDEF',
+    //     hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+    //     xssProtection: true,
+    //     nosniff: true,
+    //     referrerPolicy: 'same-origin',
+    //   }),
+    // );
     // Error Handler. Provides full stack - remove for production
     if (process.env.NODE_ENV !== 'production') {
       const errorHandler = require('errorHandler');
@@ -80,10 +78,10 @@ class App {
     this.app.use(middleware);
     /* GET home page. */
     this.app.get(process.env.BASE_URL, (req: express.Request, res: express.Response, next: express.NextFunction) => {
-      res.end('TM-Store Express Server api');
+      res.end(`TM-Store Express Server api. version: ${process.env.npm_package_version}`);
     });
     // Mount the router at /api so all its routes start with /api
-    // this.app.use(`${process.env.BASE_URL}api`, router);
+    this.app.use(`${process.env.BASE_URL}api`, this.Routes.router);
   }
 }
 

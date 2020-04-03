@@ -1,6 +1,6 @@
 {
   "name": "tm-store-express-typescript",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "tm store api express typescript",
   "main": "server.js",
   "author": "Tuấn Hin",
@@ -11,7 +11,7 @@
   },
   "scripts": {
     "start": "set NODE_ENV=production & node src/server.js",
-    "dev": "set NODE_ENV=development & ts-node-dev --respawn -- ./src/server.ts",
+    "dev": "set NODE_ENV=development & ts-node-dev --no-notify -- ./src/server.ts",
     "dev:nodemon": "set NODE_ENV=development & tsc -w & nodemon -q -w dist dist/main.js",
     "test": "echo \\\"Error: no test specified\\\" && exit 1",
     "build": "webpack --color --mode production",

@@ -11,7 +11,7 @@ class RolesController {
       const conditions = { $and: [{ flag: req.query.flag ? req.query.flag : 1 }] };
       if (req.query.filter) {
         conditions.$and.push({
-          $or: [{ key: new RegExp(req.query.filter, 'i') }, { name: new RegExp(req.query.filter, 'i') }],
+          $or: [{ key: new RegExp(req.query.filter, 'i') }, { name: new RegExp(req.query.filter, 'i') }]
         } as any);
       }
       if (!req.query.sortBy) req.query.sortBy = 'level';
@@ -19,7 +19,7 @@ class RolesController {
       const options = {
         skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
         limit: parseInt(req.query.rowsPerPage),
-        sort: { [req.query.sortBy || 'level']: req.query.descending === 'true' ? -1 : 1 }, // 1 ASC, -1 DESC
+        sort: { [req.query.sortBy || 'level']: req.query.descending === 'true' ? -1 : 1 } // 1 ASC, -1 DESC
       };
       MRole.find(conditions, null, options, (e, rs) => {
         if (e) return res.status(500).send(e);
@@ -33,20 +33,18 @@ class RolesController {
 
   public find = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      if (!req.query._id) {
+      if (req.query._id) {
         if (Types.ObjectId.isValid(req.query._id)) {
           MRole.findById(req.query._id, (e, rs) => {
             if (e) return res.status(500).send(e);
-            if (!rs) return res.status(404).send('no_exist');
             return res.status(200).json(rs);
           });
         } else {
           return res.status(500).send('invalid');
         }
-      } else if (!req.query.key) {
+      } else {
         MRole.findOne({ key: req.query.key }, (e, rs) => {
           if (e) return res.status(500).send(e);
-          if (!rs) return res.status(404).send('no_exist');
           return res.status(200).json(rs);
         });
       }
@@ -74,7 +72,7 @@ class RolesController {
           collId: rs._id,
           method: 'insert',
           ip: getIp(req),
-          userAgent: getUserAgent(req),
+          userAgent: getUserAgent(req)
         });
         return res.status(201).json(rs);
       });
@@ -96,8 +94,8 @@ class RolesController {
               desc: req.body.desc,
               level: req.body.level,
               color: req.body.color,
-              routes: req.body.routes,
-            },
+              routes: req.body.routes
+            }
           },
           (e, rs) => {
             // { multi: true, new: true },
@@ -109,10 +107,10 @@ class RolesController {
               collId: rs._id,
               method: 'update',
               ip: getIp(req),
-              userAgent: getUserAgent(req),
+              userAgent: getUserAgent(req)
             });
             return res.status(202).json(rs);
-          },
+          }
         );
       } else {
         return res.status(500).send('invalid');
@@ -138,7 +136,7 @@ class RolesController {
               collId: _id,
               method: x.flag === 1 ? 'lock' : 'unlock',
               ip: getIp(req),
-              userAgent: getUserAgent(req),
+              userAgent: getUserAgent(req)
             });
           } else rs.error.push(_id);
         }
@@ -177,7 +175,7 @@ class RolesController {
             collId: req.params._id,
             method: 'delete',
             ip: getIp(req),
-            userAgent: getUserAgent(req),
+            userAgent: getUserAgent(req)
           });
           return res.status(204).json(true);
         });

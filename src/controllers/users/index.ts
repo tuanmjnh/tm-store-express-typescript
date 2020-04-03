@@ -17,8 +17,8 @@ class UsersController {
             { email: new RegExp(req.query.filter, 'i') },
             { full_name: new RegExp(req.query.filter, 'i') },
             { person_number: new RegExp(req.query.filter, 'i') },
-            { phone: new RegExp(req.query.filter, 'i') },
-          ],
+            { phone: new RegExp(req.query.filter, 'i') }
+          ]
         } as any);
       }
       if (!req.query.sortBy) req.query.sortBy = 'email';
@@ -26,7 +26,7 @@ class UsersController {
       const options = {
         skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
         limit: parseInt(req.query.rowsPerPage),
-        sort: { [req.query.sortBy || 'email']: req.query.descending === 'true' ? -1 : 1 }, // 1 ASC, -1 DESC
+        sort: { [req.query.sortBy || 'email']: req.query.descending === 'true' ? -1 : 1 } // 1 ASC, -1 DESC
       };
       MUser.find(conditions, null, options, (e: any, rs: any) => {
         if (e) return res.status(500).send(e);
@@ -40,20 +40,18 @@ class UsersController {
 
   public find = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      if (!req.query._id) {
+      if (req.query._id) {
         if (Types.ObjectId.isValid(req.query._id)) {
           MUser.findById(req.query._id, (e, rs) => {
             if (e) return res.status(500).send(e);
-            if (!rs) return res.status(404).send('no_exist');
             return res.status(200).json(rs);
           });
         } else {
           return res.status(500).send('invalid');
         }
-      } else if (!req.query.email) {
+      } else {
         MUser.findOne({ email: req.query.email }, (e, rs) => {
           if (e) return res.status(500).send(e);
-          if (!rs) return res.status(404).send('no_exist');
           return res.status(200).json(rs);
         });
       }
@@ -85,7 +83,7 @@ class UsersController {
           collId: rs._id,
           method: 'insert',
           ip: getIp(req),
-          userAgent: getUserAgent(req),
+          userAgent: getUserAgent(req)
         });
         return res.status(201).json(rs);
       });
@@ -128,7 +126,7 @@ class UsersController {
           collId: rs._id,
           method: 'insert',
           ip: getIp(req),
-          userAgent: getUserAgent(req),
+          userAgent: getUserAgent(req)
         });
         return res.status(200).json(rs);
       });
@@ -155,8 +153,8 @@ class UsersController {
               date_birth: req.body.date_birth,
               gender: req.body.gender,
               address: req.body.address,
-              roles: req.body.roles,
-            },
+              roles: req.body.roles
+            }
           },
           (e, rs) => {
             // { multi: true, new: true },
@@ -168,10 +166,10 @@ class UsersController {
               collId: rs._id,
               method: 'update',
               ip: getIp(req),
-              userAgent: getUserAgent(req),
+              userAgent: getUserAgent(req)
             });
             return res.status(202).json(rs);
-          },
+          }
         );
       } else {
         return res.status(500).send('invalid');
@@ -201,10 +199,10 @@ class UsersController {
               collId: rs._id,
               method: 'reset-password',
               ip: getIp(req),
-              userAgent: getUserAgent(req),
+              userAgent: getUserAgent(req)
             });
             res.status(206).json({ password });
-          },
+          }
         );
       } else {
         return res.status(500).send('invalid');
@@ -235,10 +233,10 @@ class UsersController {
             collId: user._id,
             method: 'change-password',
             ip: getIp(req),
-            userAgent: getUserAgent(req),
+            userAgent: getUserAgent(req)
           });
           res.status(202).json(true);
-        },
+        }
       );
     } catch (e) {
       return res.status(500).send('invalid');
@@ -265,7 +263,7 @@ class UsersController {
               collId: _id,
               method: x.enable ? 'lock' : 'unlock',
               ip: getIp(req),
-              userAgent: getUserAgent(req),
+              userAgent: getUserAgent(req)
             });
           } else rs.error.push(_id);
         }
@@ -299,7 +297,7 @@ class UsersController {
             collId: req.params._id,
             method: 'verified',
             ip: getIp(req),
-            userAgent: getUserAgent(req),
+            userAgent: getUserAgent(req)
           });
           return res.status(205).json(rs);
         });
@@ -323,7 +321,7 @@ class UsersController {
             collId: req.params._id,
             method: 'delete',
             ip: getIp(req),
-            userAgent: getUserAgent(req),
+            userAgent: getUserAgent(req)
           });
           return res.status(204).json(true);
         });

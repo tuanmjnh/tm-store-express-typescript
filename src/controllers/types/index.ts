@@ -13,7 +13,7 @@ class TypesController {
       if (req.query.key) conditions.$and.push({ key: req.query.key } as any);
       if (req.query.filter) {
         conditions.$and.push({
-          $or: [{ name: new RegExp(req.query.filter, 'i') }, { 'meta.title': new RegExp(req.query.filter, 'i') }],
+          $or: [{ name: new RegExp(req.query.filter, 'i') }, { 'meta.title': new RegExp(req.query.filter, 'i') }]
         } as any);
       }
       if (!req.query.sortBy) req.query.sortBy = 'orders';
@@ -21,7 +21,7 @@ class TypesController {
       const options = {
         skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
         limit: parseInt(req.query.rowsPerPage),
-        sort: { key: 1, [req.query.sortBy || 'orders']: req.query.descending === 'true' ? -1 : 1 }, // 1 ASC, -1 DESC
+        sort: { key: 1, [req.query.sortBy || 'orders']: req.query.descending === 'true' ? -1 : 1 } // 1 ASC, -1 DESC
       };
       MType.find(conditions, null, options, (e: any, rs: any) => {
         if (e) return res.status(500).send(e);
@@ -35,24 +35,23 @@ class TypesController {
 
   public find = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      if (!req.query._id) {
+      if (req.query._id) {
         if (Types.ObjectId.isValid(req.query._id)) {
           MType.findById(req.query._id, (e, rs) => {
             if (e) return res.status(500).send(e);
-            if (!rs) return res.status(404).send('no_exist');
             return res.status(200).json(rs);
           });
         } else {
           return res.status(500).send('invalid');
         }
-      } else if (!req.query.key) {
+      } else {
         MType.findOne({ key: req.query.key }, (e, rs) => {
           if (e) return res.status(500).send(e);
-          if (!rs) return res.status(404).send('no_exist');
           return res.status(200).json(rs);
         });
       }
     } catch (e) {
+      console.log(e);
       return res.status(500).send('invalid');
     }
   };
@@ -104,7 +103,7 @@ class TypesController {
           collId: rs._id,
           method: 'insert',
           ip: getIp(req),
-          userAgent: getUserAgent(req),
+          userAgent: getUserAgent(req)
         });
         return res.status(201).json(rs);
       });
@@ -130,8 +129,8 @@ class TypesController {
               desc: req.body.desc,
               meta: req.body.meta,
               orders: req.body.orders,
-              flag: req.body.flag,
-            },
+              flag: req.body.flag
+            }
           },
           (e, rs) => {
             // { multi: true, new: true },
@@ -143,10 +142,10 @@ class TypesController {
               collId: rs._id,
               method: 'update',
               ip: getIp(req),
-              userAgent: getUserAgent(req),
+              userAgent: getUserAgent(req)
             });
             return res.status(202).json(rs);
-          },
+          }
         );
       } else {
         return res.status(500).send('invalid');
@@ -172,7 +171,7 @@ class TypesController {
               collId: _id,
               method: x.flag === 1 ? 'lock' : 'unlock',
               ip: getIp(req),
-              userAgent: getUserAgent(req),
+              userAgent: getUserAgent(req)
             });
           } else rs.error.push(_id);
         }
@@ -195,7 +194,7 @@ class TypesController {
             collId: req.params._id,
             method: 'delete',
             ip: getIp(req),
-            userAgent: getUserAgent(req),
+            userAgent: getUserAgent(req)
           });
           return res.status(204).json(true);
         });

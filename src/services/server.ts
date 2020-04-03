@@ -4,8 +4,9 @@ import cors from 'cors';
 import session from 'express-session';
 import flash from 'express-flash';
 import compression from 'compression';
-import lusca from 'lusca';
-import router from '../router';
+// import lusca from 'lusca';
+import errorHandler from 'errorHandler';
+import Router from '../router';
 import * as mongoose from './mongoose';
 
 // console.log(process.env.ROOT_PATH)
@@ -43,25 +44,24 @@ app.use(
   session({
     resave: true,
     saveUninitialized: true,
-    secret: process.env.SECRET,
+    secret: process.env.SECRET
     // store: new MongoStore({
     //   url: mongoUrl,
     //   autoReconnect: true
     // })
-  }),
+  })
 );
 // flash
 app.use(flash());
 // lusca
-app.use(lusca.xframe('SAMEORIGIN'));
-app.use(lusca.xssProtection(true));
-app.use((req, res, next) => {
-  res.locals.user = req.user;
-  next();
-});
+// app.use(lusca.xframe('SAMEORIGIN'));
+// app.use(lusca.xssProtection(true));
+// app.use((req, res, next) => {
+//   res.locals.user = req.user;
+//   next();
+// });
 // Error Handler. Provides full stack - remove for production
 if (process.env.NODE_ENV !== 'production') {
-  const errorHandler = require('errorHandler');
   app.use(errorHandler());
 }
 
@@ -71,13 +71,13 @@ const port = process.env.PORT || 8001;
  * Primary app routes.
  */
 /* GET home page. */
-app.get(process.env.BASE_URL, function(req, res, next) {
+app.get(process.env.BASE_URL, (req: any, res: any, next: any) => {
   // res.render('index', { title: 'Express' })
   // var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
   res.end('TM-Store Express Server api', { title: 'Express' });
 });
 // Mount the router at /api so all its routes start with /api
-app.use(`${process.env.BASE_URL}api`, router);
+app.use(`${process.env.BASE_URL}api`, new Router().router);
 
 // listen
 app

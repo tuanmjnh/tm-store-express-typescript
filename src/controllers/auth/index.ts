@@ -70,7 +70,7 @@ class AuthController {
     // console.log(routes)
     return this.generateRoutes(routes, authRoutes);
   };
-  public get = async (req: Request, res: Response, next: NextFunction, jwt: any) => {
+  public get = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const rs = await MUser.findOne({ _id: req.verify._id });
       if (!rs) return res.status(402).json({ msg: 'token_invalid' });
@@ -103,9 +103,9 @@ class AuthController {
         { _id: rs._id },
         {
           $set: {
-            last_login: new Date(),
-          },
-        },
+            last_login: new Date()
+          }
+        }
       );
       // Token
       const token = middleware.sign({ _id: rs._id });
