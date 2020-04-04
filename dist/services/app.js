@@ -57,11 +57,7 @@ class App {
         this.app.use(express_session_1.default({
             resave: true,
             saveUninitialized: true,
-            secret: process.env.SECRET
-            // store: new MongoStore({
-            //   url: mongoUrl,
-            //   autoReconnect: true
-            // })
+            secret: process.env.SECRET,
         }));
         // lusca
         // this.app.use(
@@ -87,7 +83,7 @@ class App {
         this.app.use(middleware_1.default);
         /* GET home page. */
         this.app.get(process.env.BASE_URL, (req, res, next) => {
-            res.end(`TM-Store Express Server api. version: ${process.env.npm_package_version}`);
+            res.end(`TM-Store Express Server api. version: ${process.env.npm_package_version}`); // process.env.npm_package_version
         });
         // Mount the router at /api so all its routes start with /api
         this.app.use(`${process.env.BASE_URL}api`, this.Routes.router);

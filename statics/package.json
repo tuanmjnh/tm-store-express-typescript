@@ -1,6 +1,6 @@
 {
   "name": "tm-store-express",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "tm store api express",
   "main": "server.js",
   "author": "Tuấn Hin",
@@ -10,7 +10,7 @@
     "url": "https://github.com/tuanmjnh/tm-store-express.git"
   },
   "scripts": {
-    "start": "set NODE_ENV=production&&node server.js"
+    "start": "set NODE_ENV=production && node server.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -21,11 +21,11 @@
     "express": "^4.17.1",
     "express-flash": "0.0.2",
     "express-session": "^1.17.0",
-    "formidable": "^1.2.1",
+    "formidable": "^1.2.2",
     "jsonwebtoken": "^8.5.1",
     "lusca": "^1.6.1",
     "moment": "^2.24.0",
-    "mongoose": "^5.7.12"
+    "mongoose": "^5.9.5"
   },
   "node": {
     "console": "empty",
