@@ -10,13 +10,13 @@
     "url": "https://github.com/tuanmjnh/tm-store-express-typescript.git"
   },
   "scripts": {
-    "start": "set NODE_ENV=production & node src/server.js",
+    "start": "set NODE_ENV=production & node server.js",
     "dev": "set NODE_ENV=development & ts-node-dev --no-notify ./src/server.ts",
     "dev:nodemon": "set NODE_ENV=development & tsc -w & nodemon -q -w dist dist/main.js",
     "test": "echo \\\"Error: no test specified\\\" && exit 1",
     "build": "webpack --color --mode production",
-    "build:ts": "tsc",
-    "copy": "cp -r ./src/ ./.env",
+    "build:ts": "tsc && npm run copy-static",
+    "copy-static": "ts-node copy-static.ts",
     "mongo:start": "net start MongoDB",
     "mongo:stop": "net stop MongoDB",
     "mongo:remove": "\"C:\\MongoDB\\mongod.exe\" — remove"
@@ -51,6 +51,7 @@
     "copy-webpack-plugin": "^5.1.1",
     "errorhandler": "^1.5.1",
     "nodemon": "^2.0.2",
+    "shelljs": "^0.8.3",
     "ts-loader": "^6.2.2",
     "ts-node-dev": "^1.0.0-pre.44",
     "tslint": "^6.1.0",

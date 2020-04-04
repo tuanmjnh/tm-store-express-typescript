@@ -46,8 +46,9 @@ module.exports = {
     new webpack.ProgressPlugin(),
     // new CleanWebpackPlugin(),
     new CopyPlugin([
-      { from: './src/public/', to: './public/' },
+      { from: 'package.json', to: './' },
       { from: '.env', to: './' },
+      { from: './src/public/', to: './public/' },
       { from: './statics/', to: './' },
     ]),
   ],

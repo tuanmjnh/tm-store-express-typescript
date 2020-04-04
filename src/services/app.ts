@@ -47,12 +47,12 @@ class App {
       session({
         resave: true,
         saveUninitialized: true,
-        secret: process.env.SECRET
+        secret: process.env.SECRET,
         // store: new MongoStore({
         //   url: mongoUrl,
         //   autoReconnect: true
         // })
-      })
+      }),
     );
     // lusca
     // this.app.use(
@@ -74,11 +74,12 @@ class App {
       const errorHandler = require('errorHandler');
       this.app.use(errorHandler());
     }
+
     // middleware
     this.app.use(middleware);
     /* GET home page. */
     this.app.get(process.env.BASE_URL, (req: express.Request, res: express.Response, next: express.NextFunction) => {
-      res.end(`TM-Store Express Server api. version: ${process.env.npm_package_version}`);
+      res.end(`TM-Store Express Server api. version: ${process.env.npm_package_version}`); // process.env.npm_package_version
     });
     // Mount the router at /api so all its routes start with /api
     this.app.use(`${process.env.BASE_URL}api`, this.Routes.router);

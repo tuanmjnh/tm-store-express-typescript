@@ -20,9 +20,12 @@ import dotenv from 'dotenv';
 
 // dotenv
 // dotenv.config({ path: `.env.${process.env.NODE_ENV.toString()}` });
-process.env.NODE_ENV = process.env.NODE_ENV || 'production';
-if (process.env.NODE_ENV.trim() === 'development') dotenv.config({ path: '.env.development' });
-else dotenv.config({ path: '.env' });
+// process.env.NODE_ENV = process.env.NODE_ENV || 'production';
+if (process.env.NODE_ENV && process.env.NODE_ENV.toString().trim() === 'development') {
+  dotenv.config({ path: '.env.development' });
+} else {
+  dotenv.config({ path: '.env' });
+}
 // Root path
 process.env.ROOT_PATH = __dirname;
 process.env.PUBLIC_DIR = path.join(process.env.ROOT_PATH, process.env.PUBLIC_PATH); // `${process.env.ROOT_PATH}/${process.env.PUBLIC_PATH}`
