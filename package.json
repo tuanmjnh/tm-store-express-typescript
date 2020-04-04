@@ -10,7 +10,7 @@
     "url": "https://github.com/tuanmjnh/tm-store-express-typescript.git"
   },
   "scripts": {
-    "start": "set NODE_ENV=production & node server.js",
+    "start": "set NODE_ENV=production & node ./src/server.js",
     "dev": "set NODE_ENV=development & ts-node-dev --no-notify ./src/server.ts",
     "dev:nodemon": "set NODE_ENV=development & tsc -w & nodemon -q -w dist dist/main.js",
     "test": "echo \\\"Error: no test specified\\\" && exit 1",
