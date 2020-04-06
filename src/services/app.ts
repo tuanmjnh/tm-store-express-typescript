@@ -70,10 +70,10 @@ class App {
     //   }),
     // );
     // Error Handler. Provides full stack - remove for production
-    if (process.env.NODE_ENV !== 'production') {
-      const errorHandler = require('errorHandler');
-      this.app.use(errorHandler());
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    //   const errorHandler = require('errorHandler');
+    //   this.app.use(errorHandler());
+    // }
 
     // middleware
     this.app.use(middleware);

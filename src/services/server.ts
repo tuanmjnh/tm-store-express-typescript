@@ -5,7 +5,7 @@ import session from 'express-session';
 import flash from 'express-flash';
 import compression from 'compression';
 // import lusca from 'lusca';
-import errorHandler from 'errorHandler';
+// import errorHandler from 'errorHandler';
 import Router from '../router';
 import * as mongoose from './mongoose';
 
@@ -61,9 +61,9 @@ app.use(flash());
 //   next();
 // });
 // Error Handler. Provides full stack - remove for production
-if (process.env.NODE_ENV !== 'production') {
-  app.use(errorHandler());
-}
+// if (process.env.NODE_ENV !== 'production') {
+//   app.use(errorHandler());
+// }
 
 const port = process.env.PORT || 8001;
 
