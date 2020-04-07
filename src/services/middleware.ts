@@ -68,7 +68,7 @@ export const verify = (req: Request, res: Response, next: NextFunction) => {
     const reqPath = req.path.trimChars('/');
     if (
       (reqPath === baseUrl && req.method.toUpperCase() === 'GET') ||
-      (reqPath === `${baseUrl}api/auth` && req.method.toUpperCase() === 'POST')
+      (reqPath === `${baseUrl}/api/auth` && req.method.toUpperCase() === 'POST')
     ) {
       next();
       return null;
