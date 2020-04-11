@@ -23,7 +23,7 @@ class AuthController {
       if (rolesRoutes.indexOf(e.name) >= 1) rs.push(e);
       else {
         if (e.children) {
-          const tmp = this.generateRoutes(e.children, rolesRoutes);
+          const tmp = this.generateRoutes(e.children, rolesRoutes, null);
           if (tmp.length > 0) {
             e.children = tmp;
             rs.push(e);
@@ -33,11 +33,11 @@ class AuthController {
     });
     return rs;
   };
-  private generateRoutes = (routes: IRoute[], rolesRoutes: string[], dependent?: string) => {
+  private generateRoutes = (routes: IRoute[], rolesRoutes: string[], dependent: string | null) => {
     const rs: IRoute[] = [];
     try {
-      const children = routes.filter(x => x.dependent !== null);
-      routes.forEach(e => {
+      const children = routes.filter((x) => x.dependent !== null);
+      routes.forEach((e) => {
         const _dependent = e.dependent ? e.dependent.toString() : null;
         if (rolesRoutes.indexOf(e.name) >= 0 && _dependent === dependent) {
           const child = this.generateRoutes(children, rolesRoutes, e._id.toString());
@@ -68,7 +68,7 @@ class AuthController {
     // Routes
     const routes = await MRoute.find({ flag: 1 }).sort({ dependent: 1, orders: 1 });
     // console.log(routes)
-    return this.generateRoutes(routes, authRoutes);
+    return this.generateRoutes(routes, authRoutes, null);
   };
   public get = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -103,9 +103,9 @@ class AuthController {
         { _id: rs._id },
         {
           $set: {
-            last_login: new Date()
-          }
-        }
+            last_login: new Date(),
+          },
+        },
       );
       // Token
       const token = middleware.sign({ _id: rs._id });

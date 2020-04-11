@@ -11,8 +11,8 @@ class RoutesController {
   public generateRoutes = (routes, dependent = null) => {
     const rs: any[] = [];
     try {
-      const children = routes.filter(x => x.dependent !== null);
-      routes.forEach(e => {
+      const children = routes.filter((x) => x.dependent !== null);
+      routes.forEach((e) => {
         if (e.dependent === dependent) {
           const child = this.generateRoutes(children, e._id.toString());
           if (child.length > 0) e.children = child;
@@ -26,18 +26,18 @@ class RoutesController {
   };
   public select = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      let conditions: any;
+      let conditions: any = {};
       if (req.query.flag) conditions = { $and: [{ flag: req.query.flag }] };
       if (req.query.filter) {
         conditions.$and.push({
-          $or: [{ path: new RegExp(req.query.filter, 'i') }, { name: new RegExp(req.query.filter, 'i') }]
+          $or: [{ path: new RegExp(req.query.filter, 'i') }, { name: new RegExp(req.query.filter, 'i') }],
         } as any);
       }
       req.query.rowsNumber = await MRoute.where(conditions as any).countDocuments();
       const options = {
         skip: (parseInt(req.query.page) - 1) * parseInt(req.query.rowsPerPage),
         limit: parseInt(req.query.rowsPerPage),
-        sort: { [req.query.sortBy || 'orders']: req.query.descending === 'true' ? -1 : 1 } // 1 ASC, -1 DESC
+        sort: { [req.query.sortBy || 'orders']: req.query.descending === 'true' ? -1 : 1 }, // 1 ASC, -1 DESC
       };
       MRoute.find(conditions, null, options, (e, rs) => {
         if (e) return res.status(500).send(e);
@@ -75,7 +75,7 @@ class RoutesController {
     try {
       MRoute.distinct(req.query.key ? 'meta.key' : 'meta.value', null, (e, rs) => {
         if (e) return res.status(500).send(e);
-        if (req.query.filter) rs = rs.filter(x => new RegExp(req.query.filter, 'i').test(x));
+        if (req.query.filter) rs = rs.filter((x) => new RegExp(req.query.filter, 'i').test(x));
         const rowsNumber = rs.length;
         if (req.query.page && req.query.rowsPerPage) rs = Pagination.get(rs, req.query.page, req.query.rowsPerPage);
         return res.status(200).json({ rowsNumber, data: rs });
@@ -105,7 +105,7 @@ class RoutesController {
           collId: rs._id,
           method: 'insert',
           ip: getIp(req),
-          userAgent: getUserAgent(req)
+          userAgent: getUserAgent(req),
         });
         return res.status(201).json(rs);
       });
@@ -150,7 +150,7 @@ class RoutesController {
         const x = await MRoute.findOne({ _id: { $nin: [req.body._id] }, name: req.body.name });
         if (x) return res.status(501).send('exist');
         if (req.body.meta) {
-          req.body.meta.forEach(e => {
+          req.body.meta.forEach((e) => {
             if (e.key === 'hidden') e.value = e.value === 'true' ? true : false;
           });
         }
@@ -167,8 +167,8 @@ class RoutesController {
               orders: req.body.orders,
               // hidden: req.body.hidden,
               meta: req.body.meta,
-              flag: req.body.flag
-            }
+              flag: req.body.flag,
+            },
           },
           (e, rs) => {
             if (e) return res.status(500).send(e);
@@ -180,10 +180,10 @@ class RoutesController {
               collId: rs._id,
               method: 'update',
               ip: getIp(req),
-              userAgent: getUserAgent(req)
+              userAgent: getUserAgent(req),
             });
             return res.status(202).json(rs);
-          }
+          },
         );
       } else {
         return res.status(500).send('invalid');
@@ -207,8 +207,8 @@ class RoutesController {
             $set: {
               dependent: req.body.dependent,
               level: req.body.level,
-              orders: req.body.orders
-            }
+              orders: req.body.orders,
+            },
           },
           (e, rs) => {
             // { multi: true, new: true },
@@ -216,7 +216,7 @@ class RoutesController {
             // Push logs
             // logs.push(req, { user_id: verify._id, collection: 'roles', collection_id: req.body._id, method: 'update' })
             return res.status(202).json(rs);
-          }
+          },
         );
       } else {
         return res.status(500).send('invalid');
@@ -242,7 +242,7 @@ class RoutesController {
               collId: _id,
               method: x.flag === 1 ? 'lock' : 'unlock',
               ip: getIp(req),
-              userAgent: getUserAgent(req)
+              userAgent: getUserAgent(req),
             });
           } else rs.error.push(_id);
         }
@@ -265,7 +265,7 @@ class RoutesController {
             collId: req.params._id,
             method: 'delete',
             ip: getIp(req),
-            userAgent: getUserAgent(req)
+            userAgent: getUserAgent(req),
           });
           return res.status(204).json(true);
         });
